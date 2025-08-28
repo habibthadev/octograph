@@ -1,0 +1,500 @@
+# API Reference
+
+Complete API reference for all Octograph components, hooks, and utilities.
+
+## Components
+
+### OctoGraph
+
+The main component for rendering GitHub contribution graphs.
+
+```tsx
+interface OctoGraphProps {
+  /** GitHub username to fetch contributions for */
+  username: string;
+
+  /** Year to display contributions for (defaults to current year) */
+  year?: number;
+
+  /** Theme to use for styling */
+  theme?: ThemeName | ThemeColors;
+
+  /** Size of each contribution cell in pixels */
+  cellSize?: number | "auto";
+
+  /** Gap between cells in pixels */
+  cellGap?: number;
+
+  /** Border radius for cells */
+  cellRadius?: number;
+
+  /** Whether the graph should be responsive */
+  responsive?: boolean;
+
+  /** Whether to show contribution statistics */
+  showStats?: boolean;
+
+  /** Custom loading component */
+  loadingComponent?: React.ComponentType;
+
+  /** Custom error component */
+  errorComponent?: React.ComponentType<ErrorComponentProps>;
+
+  /** Custom tooltip content renderer */
+  tooltipContent?: (data: TooltipData) => React.ReactNode;
+
+  /** Pre-fetched contribution data */
+  data?: ContributionData;
+
+  /** Rendering mode */
+  mode?: "client" | "ssr" | "lightweight";
+
+  /** Whether to lazy load when in viewport */
+  lazy?: boolean;
+
+  /** Cache duration for API requests */
+  cacheDuration?: string;
+
+  /** Additional CSS classes */
+  className?: string;
+
+  /** Additional styles */
+  style?: React.CSSProperties;
+
+  /** Accessibility label */
+  ariaLabel?: string;
+}
+```
+
+#### Props Details
+
+**username** `string` _required_
+
+- GitHub username to fetch contribution data for
+- Example: `"habibthadev"`
+
+**year** `number`
+
+- Year to display contributions for
+- Defaults to current year
+- Example: `2023`
+
+**theme** `ThemeName | ThemeColors`
+
+- Built-in theme name or custom theme object
+- Built-in themes: `"github"`, `"shadcn"`, `"vesper"`, `"vercel"`, `"11labs"`, `"prisma"`, `"supabase"`, `"ayu"`, `"atom"`
+- Example: `"github"` or custom theme object
+
+**cellSize** `number | 'auto'`
+
+- Size of each contribution cell in pixels
+- Use `'auto'` for responsive sizing
+- Default: `11`
+
+**cellGap** `number`
+
+- Gap between cells in pixels
+- Default: `3`
+
+**cellRadius** `number`
+
+- Border radius for cells in pixels
+- Default: `2`
+
+**responsive** `boolean`
+
+- Whether the graph should adapt to container size
+- Default: `false`
+
+**showStats** `boolean`
+
+- Whether to display contribution statistics
+- Default: `false`
+
+**loadingComponent** `React.ComponentType`
+
+- Custom component to show while loading
+- Receives no props
+
+**errorComponent** `React.ComponentType<ErrorComponentProps>`
+
+- Custom component to show on error
+- Receives `error` and `retry` props
+
+**tooltipContent** `(data: TooltipData) => React.ReactNode`
+
+- Custom function to render tooltip content
+- Receives contribution data for the hovered cell
+
+**data** `ContributionData`
+
+- Pre-fetched contribution data to avoid API calls
+- Useful for SSR scenarios
+
+**mode** `'client' | 'ssr' | 'lightweight'`
+
+- Rendering mode optimization
+- Default: `'client'`
+
+**lazy** `boolean`
+
+- Whether to only load when component enters viewport
+- Default: `false`
+
+**cacheDuration** `string`
+
+- How long to cache API responses
+- Examples: `"5m"`, `"1h"`, `"24h"`
+- Default: `"1h"`
+
+### ContributionCell
+
+Individual cell component (used internally).
+
+```tsx
+interface ContributionCellProps {
+  /** Contribution data for this cell */
+  contribution: ContributionDay;
+
+  /** Cell size in pixels */
+  size: number;
+
+  /** Cell border radius */
+  radius: number;
+
+  /** Theme colors */
+  theme: ThemeColors;
+
+  /** Click handler */
+  onClick?: (contribution: ContributionDay) => void;
+
+  /** Additional CSS classes */
+  className?: string;
+}
+```
+
+### ContributionGrid
+
+Grid layout component (used internally).
+
+```tsx
+interface ContributionGridProps {
+  /** Array of contribution weeks */
+  weeks: ContributionWeek[];
+
+  /** Cell size in pixels */
+  cellSize: number;
+
+  /** Gap between cells */
+  cellGap: number;
+
+  /** Cell border radius */
+  cellRadius: number;
+
+  /** Theme colors */
+  theme: ThemeColors;
+
+  /** Cell click handler */
+  onCellClick?: (contribution: ContributionDay) => void;
+}
+```
+
+### Legend
+
+Contribution level legend component.
+
+```tsx
+interface LegendProps {
+  /** Theme colors */
+  theme: ThemeColors;
+
+  /** Whether to show text labels */
+  showLabels?: boolean;
+
+  /** Cell size for legend items */
+  cellSize?: number;
+
+  /** Additional CSS classes */
+  className?: string;
+}
+```
+
+## Hooks
+
+### useOctograph
+
+Main hook for fetching and managing contribution data.
+
+```tsx
+function useOctograph(options: UseOctographOptions): UseOctographResult;
+
+interface UseOctographOptions {
+  /** GitHub username */
+  username: string;
+
+  /** Year to fetch */
+  year?: number;
+
+  /** GitHub API token */
+  token?: string;
+
+  /** Cache duration */
+  cacheDuration?: string;
+
+  /** Whether to enable the query */
+  enabled?: boolean;
+}
+
+interface UseOctographResult {
+  /** Contribution data */
+  data?: ContributionData;
+
+  /** Loading state */
+  isLoading: boolean;
+
+  /** Error state */
+  error?: Error;
+
+  /** Whether data is being fetched */
+  isFetching: boolean;
+
+  /** Refetch function */
+  refetch: () => void;
+}
+```
+
+### useThemeMode
+
+Hook for managing theme mode (light/dark).
+
+```tsx
+function useThemeMode(): UseThemeModeResult;
+
+interface UseThemeModeResult {
+  /** Current theme mode */
+  mode: "light" | "dark";
+
+  /** Function to toggle theme mode */
+  toggleMode: () => void;
+
+  /** Function to set specific mode */
+  setMode: (mode: "light" | "dark") => void;
+}
+```
+
+### useResponsiveCellSize
+
+Hook for calculating responsive cell sizes.
+
+```tsx
+function useResponsiveCellSize(
+  containerRef: React.RefObject<HTMLElement>,
+  baseSize?: number
+): number;
+```
+
+## Utilities
+
+### Theme Functions
+
+```tsx
+/** Get theme colors for current mode */
+function getThemeColors(
+  theme: ThemeName | ThemeColors,
+  mode: "light" | "dark"
+): ThemeColors;
+
+/** Check if theme is a built-in theme */
+function isBuiltInTheme(theme: any): theme is ThemeName;
+
+/** Create custom theme with light/dark variants */
+function createTheme(light: ThemeColors, dark: ThemeColors): ThemeDefinition;
+```
+
+### Data Processing
+
+```tsx
+/** Transform GitHub API response to internal format */
+function transformContributionData(
+  apiResponse: GitHubContributionResponse
+): ContributionData;
+
+/** Calculate contribution statistics */
+function calculateStats(data: ContributionData): ContributionStats;
+
+/** Get contribution level (0-4) for a given count */
+function getContributionLevel(
+  count: number,
+  maxCount: number
+): 0 | 1 | 2 | 3 | 4;
+
+/** Format date for display */
+function formatContributionDate(
+  date: string,
+  format?: "short" | "long"
+): string;
+```
+
+### Responsive Utilities
+
+```tsx
+/** Calculate optimal cell size for container */
+function calculateCellSize(
+  containerWidth: number,
+  totalCells: number,
+  gap: number
+): number;
+
+/** Check if device prefers reduced motion */
+function prefersReducedMotion(): boolean;
+
+/** Get responsive breakpoint */
+function getBreakpoint(): "mobile" | "tablet" | "desktop";
+```
+
+## Type Definitions
+
+### Core Types
+
+```tsx
+interface ContributionDay {
+  /** ISO date string */
+  date: string;
+
+  /** Number of contributions */
+  count: number;
+
+  /** Contribution level (0-4) */
+  level: 0 | 1 | 2 | 3 | 4;
+
+  /** GitHub's color for this level */
+  color: string;
+}
+
+interface ContributionWeek {
+  /** First day of the week */
+  firstDay: string;
+
+  /** Array of days in this week */
+  contributionDays: ContributionDay[];
+}
+
+interface ContributionData {
+  /** Total contributions for the year */
+  totalContributions: number;
+
+  /** Array of weeks */
+  weeks: ContributionWeek[];
+}
+
+interface ContributionStats {
+  /** Total contributions */
+  total: number;
+
+  /** Average per day */
+  average: number;
+
+  /** Best day */
+  bestDay: ContributionDay;
+
+  /** Current streak */
+  currentStreak: number;
+
+  /** Longest streak */
+  longestStreak: number;
+}
+```
+
+### Theme Types
+
+```tsx
+interface ThemeColors {
+  /** Background color */
+  background: string;
+
+  /** Text color */
+  text: string;
+
+  /** No contributions */
+  grade0: string;
+
+  /** Low contributions */
+  grade1: string;
+
+  /** Medium-low contributions */
+  grade2: string;
+
+  /** Medium-high contributions */
+  grade3: string;
+
+  /** High contributions */
+  grade4: string;
+}
+
+interface ThemeDefinition {
+  /** Light mode colors */
+  light: ThemeColors;
+
+  /** Dark mode colors */
+  dark: ThemeColors;
+}
+
+type ThemeName =
+  | "github"
+  | "shadcn"
+  | "vesper"
+  | "vercel"
+  | "11labs"
+  | "prisma"
+  | "supabase"
+  | "ayu"
+  | "atom";
+```
+
+### Component Types
+
+```tsx
+interface ErrorComponentProps {
+  /** Error object */
+  error: Error;
+
+  /** Function to retry the operation */
+  retry: () => void;
+}
+
+interface TooltipData {
+  /** Date for this cell */
+  date: string;
+
+  /** Contribution count */
+  count: number;
+
+  /** Contribution level */
+  level: 0 | 1 | 2 | 3 | 4;
+
+  /** Formatted date string */
+  formattedDate: string;
+}
+```
+
+## Constants
+
+```tsx
+/** Built-in theme names */
+export const THEME_NAMES: readonly ThemeName[];
+
+/** Default cell size */
+export const DEFAULT_CELL_SIZE = 11;
+
+/** Default cell gap */
+export const DEFAULT_CELL_GAP = 3;
+
+/** Default cell radius */
+export const DEFAULT_CELL_RADIUS = 2;
+
+/** Default cache duration */
+export const DEFAULT_CACHE_DURATION = "1h";
+
+/** GitHub GraphQL API endpoint */
+export const GITHUB_API_ENDPOINT = "https://api.github.com/graphql";
+```

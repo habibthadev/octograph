@@ -1,0 +1,308 @@
+# Props API
+
+Complete reference for all props available on the `<OctoGraph>` component.
+
+## Required Props
+
+### `username`
+
+- **Type:** `string`
+- **Description:** GitHub username to fetch contribution data for
+
+```tsx
+<OctoGraph username="habibthadev" />
+```
+
+## Optional Props
+
+### `year`
+
+- **Type:** `number`
+- **Default:** Current year
+- **Description:** Year to display contributions for
+
+```tsx
+<OctoGraph username="habibthadev" year={2023} />
+```
+
+### `theme`
+
+- **Type:** `string | CustomTheme`
+- **Default:** `"github"`
+- **Description:** Theme name or custom theme object
+
+**Built-in themes:**
+
+- `"github"` - GitHub's native colors
+- `"shadcn"` - Shadcn UI theme
+- `"vesper"` - Vesper theme
+- `"vercel"` - Vercel theme
+- `"elevenlabs"` - 11Labs theme
+- `"prisma"` - Prisma theme
+- `"supabase"` - Supabase theme
+- `"ayu"` - Ayu theme
+- `"atom"` - Atom theme
+
+```tsx
+// Built-in theme
+<OctoGraph username="habibthadev" theme="vesper" />
+
+// Custom theme
+<OctoGraph
+  username="habibthadev"
+  theme={{
+    levels: {
+      0: '#ebedf0',
+      1: '#9be9a8',
+      2: '#40c463',
+      3: '#30a14e',
+      4: '#216e39'
+    }
+  }}
+/>
+```
+
+### `timeRange`
+
+- **Type:** `{ from: Date, to: Date }`
+- **Description:** Custom date range instead of full year
+
+```tsx
+<OctoGraph
+  username="habibthadev"
+  timeRange={{
+    from: new Date("2023-06-01"),
+    to: new Date("2023-12-31"),
+  }}
+/>
+```
+
+### `mode`
+
+- **Type:** `"csr" | "ssr"`
+- **Default:** `"csr"`
+- **Description:** Rendering mode for client-side or server-side
+
+```tsx
+<OctoGraph username="habibthadev" mode="ssr" />
+```
+
+### `cacheDuration`
+
+- **Type:** `string | number`
+- **Default:** `"10m"`
+- **Description:** How long to cache GitHub API responses
+
+**Format options:**
+
+- `"10s"` - 10 seconds
+- `"5m"` - 5 minutes
+- `"2h"` - 2 hours
+- `"1d"` - 1 day
+- `3600000` - Milliseconds
+
+```tsx
+<OctoGraph username="habibthadev" cacheDuration="1h" />
+```
+
+### `cellSize`
+
+- **Type:** `number`
+- **Default:** `12`
+- **Description:** Size of each contribution cell in pixels
+
+```tsx
+<OctoGraph username="habibthadev" cellSize={16} />
+```
+
+### `cellRadius`
+
+- **Type:** `number`
+- **Default:** `2`
+- **Description:** Border radius of cells in pixels
+
+```tsx
+<OctoGraph username="habibthadev" cellRadius={4} />
+```
+
+### `showTooltip`
+
+- **Type:** `boolean`
+- **Default:** `true`
+- **Description:** Show tooltips on hover
+
+```tsx
+<OctoGraph username="habibthadev" showTooltip={false} />
+```
+
+### `showMonthLabels`
+
+- **Type:** `boolean`
+- **Default:** `true`
+- **Description:** Show month labels above the grid
+
+```tsx
+<OctoGraph username="habibthadev" showMonthLabels={false} />
+```
+
+### `showWeekdayLabels`
+
+- **Type:** `boolean`
+- **Default:** `true`
+- **Description:** Show weekday labels on the left
+
+```tsx
+<OctoGraph username="habibthadev" showWeekdayLabels={false} />
+```
+
+### `showLegend`
+
+- **Type:** `boolean`
+- **Default:** `true`
+- **Description:** Show contribution level legend
+
+```tsx
+<OctoGraph username="habibthadev" showLegend={false} />
+```
+
+### `onCellClick`
+
+- **Type:** `(date: string, count: number) => void`
+- **Description:** Callback when a cell is clicked
+
+```tsx
+<OctoGraph
+  username="habibthadev"
+  onCellClick={(date, count) => {
+    console.log(`${count} contributions on ${date}`);
+  }}
+/>
+```
+
+### `onCellHover`
+
+- **Type:** `(date: string, count: number) => void`
+- **Description:** Callback when a cell is hovered
+
+```tsx
+<OctoGraph
+  username="habibthadev"
+  onCellHover={(date, count) => {
+    console.log(`Hovered: ${count} contributions on ${date}`);
+  }}
+/>
+```
+
+### `className`
+
+- **Type:** `string`
+- **Description:** Additional CSS class names
+
+```tsx
+<OctoGraph
+  username="habibthadev"
+  className="my-custom-styles border rounded-lg"
+/>
+```
+
+### `loading`
+
+- **Type:** `boolean`
+- **Default:** `false`
+- **Description:** Manual loading state override
+
+```tsx
+<OctoGraph username="habibthadev" loading={true} />
+```
+
+### `error`
+
+- **Type:** `boolean`
+- **Default:** `false`
+- **Description:** Manual error state override
+
+```tsx
+<OctoGraph username="habibthadev" error={true} />
+```
+
+### `data`
+
+- **Type:** `GitHubContributionCalendar`
+- **Description:** Manually provide contribution data
+
+```tsx
+const customData = {
+  totalContributions: 1337,
+  weeks: [/* ... */]
+}
+
+<OctoGraph username="habibthadev" data={customData} />
+```
+
+### `renderCell`
+
+- **Type:** `(props: CellRenderProps) => React.ReactNode`
+- **Description:** Custom cell renderer for complete control
+
+```tsx
+<OctoGraph
+  username="habibthadev"
+  renderCell={({ date, count, level, size, color }) => (
+    <circle
+      cx={size / 2}
+      cy={size / 2}
+      r={size / 2 - 1}
+      fill={color}
+      onClick={() => alert(`${count} on ${date}`)}
+    />
+  )}
+/>
+```
+
+## Type Definitions
+
+### `CustomTheme`
+
+```tsx
+interface CustomTheme {
+  background?: string;
+  foreground?: string;
+  border?: string;
+  muted?: string;
+  mutedForeground?: string;
+  card?: string;
+  cardForeground?: string;
+  primary?: string;
+  primaryForeground?: string;
+  secondary?: string;
+  secondaryForeground?: string;
+  accent?: string;
+  accentForeground?: string;
+  destructive?: string;
+  destructiveForeground?: string;
+  ring?: string;
+  levels?: {
+    0?: string; // No contributions
+    1?: string; // Low contributions
+    2?: string; // Medium contributions
+    3?: string; // High contributions
+    4?: string; // Very high contributions
+  };
+}
+```
+
+### `CellRenderProps`
+
+```tsx
+interface CellRenderProps {
+  date: string;
+  count: number;
+  level: number;
+  size: number;
+  radius: number;
+  color: string;
+  onClick?: () => void;
+  onHover?: () => void;
+  "aria-label": string;
+}
+```

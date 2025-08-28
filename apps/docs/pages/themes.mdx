@@ -1,0 +1,233 @@
+# Themes
+
+Octograph comes with a comprehensive theming system that allows you to customize the appearance of your contribution graphs to match your design system.
+
+## Built-in Themes
+
+### GitHub Theme (Default)
+
+The classic GitHub contribution graph colors.
+
+```tsx
+<OctoGraph username="habibthadev" theme="github" />
+```
+
+### Shadcn Theme
+
+Matches the popular shadcn/ui design system.
+
+```tsx
+<OctoGraph username="habibthadev" theme="shadcn" />
+```
+
+### Vesper Theme
+
+Beautiful dark-purple inspired theme.
+
+```tsx
+<OctoGraph username="habibthadev" theme="vesper" />
+```
+
+### Vercel Theme
+
+Clean monochrome theme inspired by Vercel's design.
+
+```tsx
+<OctoGraph username="habibthadev" theme="vercel" />
+```
+
+### 11Labs Theme
+
+Vibrant purple theme matching 11Labs branding.
+
+```tsx
+<OctoGraph username="habibthadev" theme="elevenlabs" />
+```
+
+### Prisma Theme
+
+Blue-teal theme inspired by Prisma's brand colors.
+
+```tsx
+<OctoGraph username="habibthadev" theme="prisma" />
+```
+
+### Supabase Theme
+
+Green theme matching Supabase's brand colors.
+
+```tsx
+<OctoGraph username="habibthadev" theme="supabase" />
+```
+
+### Ayu Theme
+
+Warm theme inspired by the Ayu color scheme.
+
+```tsx
+<OctoGraph username="habibthadev" theme="ayu" />
+```
+
+### Atom Theme
+
+Theme inspired by the Atom editor color scheme.
+
+```tsx
+<OctoGraph username="habibthadev" theme="atom" />
+```
+
+## Custom Themes
+
+You can create your own theme by passing a custom theme object:
+
+```tsx
+const customTheme = {
+  levels: {
+    0: '#ebedf0',  // No contributions
+    1: '#c6e48b',  // 1-3 contributions
+    2: '#7bc96f',  // 4-6 contributions
+    3: '#239a3b',  // 7-9 contributions
+    4: '#196127'   // 10+ contributions
+  }
+}
+
+<OctoGraph username="habibthadev" theme={customTheme} />
+```
+
+### Full Theme Customization
+
+For complete control, you can specify all theme properties:
+
+```tsx
+const fullCustomTheme = {
+  background: '#ffffff',
+  foreground: '#000000',
+  border: '#e1e4e8',
+  muted: '#f6f8fa',
+  mutedForeground: '#6a737d',
+  card: '#ffffff',
+  cardForeground: '#000000',
+  primary: '#0366d6',
+  primaryForeground: '#ffffff',
+  secondary: '#f6f8fa',
+  secondaryForeground: '#000000',
+  accent: '#f6f8fa',
+  accentForeground: '#000000',
+  destructive: '#d73a49',
+  destructiveForeground: '#ffffff',
+  ring: '#0366d6',
+  levels: {
+    0: '#ebedf0',
+    1: '#c6e48b',
+    2: '#7bc96f',
+    3: '#239a3b',
+    4: '#196127'
+  }
+}
+
+<OctoGraph username="habibthadev" theme={fullCustomTheme} />
+```
+
+## Dynamic Theme Switching
+
+You can dynamically switch between themes using the `useThemeMode` hook:
+
+```tsx
+import { useState } from "react";
+import { OctoGraph, getThemeNames } from "octograph";
+
+function ThemeSwitcher() {
+  const [selectedTheme, setSelectedTheme] = useState("github");
+  const themes = getThemeNames();
+
+  return (
+    <div>
+      <select
+        value={selectedTheme}
+        onChange={(e) => setSelectedTheme(e.target.value)}
+      >
+        {themes.map((theme) => (
+          <option key={theme} value={theme}>
+            {theme}
+          </option>
+        ))}
+      </select>
+
+      <OctoGraph username="habibthadev" theme={selectedTheme} />
+    </div>
+  );
+}
+```
+
+## Light/Dark Mode Detection
+
+Octograph automatically detects the user's preferred color scheme:
+
+```tsx
+import { useThemeMode } from "octograph";
+
+function ResponsiveGraph() {
+  const { mode, toggleMode } = useThemeMode();
+
+  return (
+    <div>
+      <button onClick={toggleMode}>
+        Switch to {mode === "light" ? "dark" : "light"} mode
+      </button>
+
+      <OctoGraph
+        username="habibthadev"
+        theme="github" // Will automatically use light/dark variant
+      />
+    </div>
+  );
+}
+```
+
+## CSS Variables
+
+All themes support CSS custom properties for dynamic styling:
+
+```css
+.octograph-container {
+  --octograph-background: #ffffff;
+  --octograph-foreground: #000000;
+  --octograph-border: #e1e4e8;
+  --octograph-muted: #f6f8fa;
+  --octograph-muted-foreground: #6a737d;
+}
+```
+
+## Theme Utilities
+
+### Getting Theme Information
+
+```tsx
+import { getTheme, isValidThemeName, getThemeNames } from "octograph";
+
+// Get theme colors
+const githubColors = getTheme("github", "light");
+
+// Check if theme exists
+const isValid = isValidThemeName("custom-theme"); // false
+
+// Get all available theme names
+const allThemes = getThemeNames();
+// ['github', 'shadcn', 'vesper', 'vercel', ...]
+```
+
+### Type Safety
+
+All themes are fully typed for excellent developer experience:
+
+```tsx
+import type { CustomTheme, ThemeColors } from "octograph";
+
+const myTheme: CustomTheme = {
+  levels: {
+    0: "#ebedf0",
+    1: "#c6e48b",
+    // TypeScript will ensure all required properties
+  },
+};
+```

@@ -1,0 +1,397 @@
+# SSR Guide
+
+Octograph fully supports Server-Side Rendering (SSR) with Next.js and React Server Components. This guide covers how to set up and use Octograph in various SSR scenarios.
+
+## Next.js App Router
+
+### Basic Usage
+
+In Next.js 13+ with App Router, you can use Octograph in both server and client components:
+
+```tsx
+// app/profile/page.tsx (Server Component)
+import { OctoGraph } from "octograph";
+
+export default function ProfilePage() {
+  return (
+    <main>
+      <h1>My GitHub Activity</h1>
+      <OctoGraph username="habibthadev" mode="ssr" year={2023} />
+    </main>
+  );
+}
+```
+
+### With React Query Provider
+
+For client-side data fetching, wrap your app with the React Query provider:
+
+```tsx
+// app/layout.tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryProvider } from "./providers";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html>
+      <body>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+      </body>
+    </html>
+  );
+}
+
+// app/providers.tsx
+("use client");
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode, useState } from "react";
+
+export function ReactQueryProvider({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient());
+
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+}
+```
+
+### Server-Side Data Fetching
+
+For better performance, pre-fetch data on the server:
+
+```tsx
+// app/profile/page.tsx
+import { OctoGraph } from "octograph";
+
+async function getContributionData(username: string, year: number) {
+  // Your server-side data fetching logic
+  const res = await fetch(`/api/github/${username}/${year}`);
+  return res.json();
+}
+
+export default async function ProfilePage() {
+  const data = await getContributionData("habibthadev", 2023);
+
+  return (
+    <OctoGraph username="habibthadev" year={2023} data={data} mode="ssr" />
+  );
+}
+```
+
+## Next.js Pages Router
+
+### With getServerSideProps
+
+```tsx
+// pages/profile.tsx
+import { GetServerSideProps } from "next";
+import { OctoGraph } from "octograph";
+import {
+  QueryClient,
+  QueryClientProvider,
+  dehydrate,
+} from "@tanstack/react-query";
+
+interface Props {
+  username: string;
+  dehydratedState: any;
+}
+
+export default function ProfilePage({ username, dehydratedState }: Props) {
+  const queryClient = new QueryClient();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <OctoGraph username={username} />
+    </QueryClientProvider>
+  );
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const queryClient = new QueryClient();
+  const username = context.query.username as string;
+
+  // Pre-fetch data on server
+  await queryClient.prefetchQuery({
+    queryKey: ["octograph", username, 2023],
+    queryFn: () => fetchGitHubContributions(username, 2023),
+  });
+
+  return {
+    props: {
+      username,
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
+};
+```
+
+### With getStaticProps
+
+For static generation at build time:
+
+```tsx
+// pages/profiles/[username].tsx
+import { GetStaticProps, GetStaticPaths } from "next";
+import { OctoGraph } from "octograph";
+
+interface Props {
+  username: string;
+  contributionData: any;
+}
+
+export default function UserProfile({ username, contributionData }: Props) {
+  return <OctoGraph username={username} data={contributionData} mode="ssr" />;
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  // Define which usernames to pre-generate
+  const usernames = ["habibthadev", "torvalds", "gaearon"];
+
+  const paths = usernames.map((username) => ({
+    params: { username },
+  }));
+
+  return { paths, fallback: "blocking" };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const username = params?.username as string;
+
+  try {
+    const contributionData = await fetchContributionData(username);
+
+    return {
+      props: {
+        username,
+        contributionData,
+      },
+      revalidate: 3600, // Revalidate every hour
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};
+```
+
+## API Routes
+
+Create API routes to handle GitHub data fetching:
+
+```tsx
+// app/api/github/[username]/[year]/route.ts (App Router)
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { username: string; year: string } }
+) {
+  const { username, year } = params;
+
+  try {
+    const token = process.env.GITHUB_TOKEN;
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "GitHub token not configured" },
+        { status: 500 }
+      );
+    }
+
+    const query = `
+      query {
+        user(login: "${username}") {
+          contributionsCollection(from: "${year}-01-01T00:00:00Z", to: "${year}-12-31T23:59:59Z") {
+            contributionCalendar {
+              totalContributions
+              weeks {
+                contributionDays {
+                  contributionCount
+                  date
+                  color
+                  contributionLevel
+                }
+                firstDay
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const response = await fetch("https://api.github.com/graphql", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    const data = await response.json();
+
+    if (data.errors) {
+      return NextResponse.json({ error: data.errors }, { status: 400 });
+    }
+
+    return NextResponse.json(
+      data.data.user.contributionsCollection.contributionCalendar
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to fetch contribution data" },
+      { status: 500 }
+    );
+  }
+}
+```
+
+```tsx
+// pages/api/github/[username]/[year].ts (Pages Router)
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const { username, year } = req.query;
+
+  // Same logic as above...
+}
+```
+
+## Hydration Considerations
+
+### Preventing Hydration Mismatches
+
+When using SSR, ensure consistent rendering between server and client:
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { OctoGraph } from "octograph";
+
+export default function ClientOnlyGraph({ username }: { username: string }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div>Loading...</div>;
+  }
+
+  return <OctoGraph username={username} />;
+}
+```
+
+### Using React Query with SSR
+
+Pre-populate React Query cache on the server:
+
+```tsx
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+
+export default async function Page() {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["octograph", "habibthadev", 2023],
+    queryFn: fetchContributionData,
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <OctoGraph username="habibthadev" year={2023} />
+    </HydrationBoundary>
+  );
+}
+```
+
+## Environment Variables
+
+Configure environment variables for different environments:
+
+```bash
+# .env.local (for local development)
+GITHUB_TOKEN=your_github_token_here
+
+# .env.production (for production)
+GITHUB_TOKEN=your_production_token_here
+```
+
+## Error Handling
+
+Handle errors gracefully in SSR:
+
+```tsx
+import { ErrorBoundary } from "react-error-boundary";
+import { OctoGraph } from "octograph";
+
+function ErrorFallback({ error, resetErrorBoundary }: any) {
+  return (
+    <div className="p-4 border border-red-200 rounded">
+      <h2>Something went wrong:</h2>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <OctoGraph username="habibthadev" />
+    </ErrorBoundary>
+  );
+}
+```
+
+## Performance Optimization
+
+### Caching Strategies
+
+```tsx
+// Cache on the server side
+export const revalidate = 3600 // 1 hour
+
+// Cache in React Query
+<OctoGraph
+  username="habibthadev"
+  cacheDuration="1h"
+/>
+```
+
+### Streaming and Suspense
+
+Use React's Streaming SSR features:
+
+```tsx
+import { Suspense } from "react";
+import { OctoGraph } from "octograph";
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading contributions...</div>}>
+      <OctoGraph username="habibthadev" />
+    </Suspense>
+  );
+}
+```

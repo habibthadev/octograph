@@ -1,0 +1,91 @@
+{
+  "name": "octograph",
+  "version": "1.0.0",
+  "description": "GitHub-style activity graph React component library with extreme customization and modern DX",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./styles": "./dist/styles.css",
+    "./themes": {
+      "types": "./dist/themes.d.ts",
+      "import": "./dist/themes.mjs",
+      "require": "./dist/themes.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "react",
+    "github",
+    "activity",
+    "graph",
+    "chart",
+    "visualization",
+    "contribution",
+    "typescript",
+    "ssr",
+    "nextjs"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/habibthadev/octograph"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.85.5",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.2.0",
+    "lucide-react": "^0.312.0",
+    "tailwind-merge": "^2.2.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.2.0",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "jsdom": "^24.0.0",
+    "postcss": "^8.4.33",
+    "rimraf": "^5.0.5",
+    "tailwindcss": "^3.4.4",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vitest": "^1.2.0"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}

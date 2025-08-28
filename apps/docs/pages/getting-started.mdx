@@ -1,0 +1,190 @@
+# Getting Started
+
+This guide will help you get up and running with Octograph in your React application.
+
+## Installation
+
+Install Octograph using your preferred package manager:
+
+```bash
+# npm
+npm install octograph @tanstack/react-query
+
+# pnpm
+pnpm add octograph @tanstack/react-query
+
+# yarn
+yarn add octograph @tanstack/react-query
+```
+
+## Dependencies
+
+Octograph has the following peer dependencies:
+
+- `react` >= 16.8.0
+- `react-dom` >= 16.8.0
+
+And includes these dependencies:
+
+- `@tanstack/react-query` - For data fetching and caching
+- `@radix-ui/react-tooltip` - For accessible tooltips
+- `date-fns` - For date manipulation
+- `zod` - For API response validation
+
+## Basic Setup
+
+### 1. Import Styles
+
+Import the CSS styles in your main application file:
+
+```tsx
+// app.tsx or index.tsx
+import "octograph/styles";
+```
+
+### 2. Setup React Query
+
+Wrap your app with the React Query provider:
+
+```tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      {/* Your app components */}
+    </QueryClientProvider>
+  );
+}
+```
+
+### 3. Use the Component
+
+```tsx
+import { OctoGraph } from "octograph";
+
+function ProfilePage() {
+  return (
+    <div>
+      <h1>My GitHub Activity</h1>
+      <OctoGraph username="habibthadev" />
+    </div>
+  );
+}
+```
+
+## GitHub Token
+
+For production applications, you'll need a GitHub personal access token to avoid rate limits:
+
+### Creating a Token
+
+1. Go to [GitHub Settings](https://github.com/settings/tokens)
+2. Click "Generate new token (classic)"
+3. Select the `read:user` scope
+4. Copy the generated token
+
+### Environment Variables
+
+Add the token to your environment variables:
+
+```bash
+# .env.local (Next.js)
+GITHUB_TOKEN=ghp_your_token_here
+
+# For client-side usage
+NEXT_PUBLIC_GITHUB_TOKEN=ghp_your_token_here
+```
+
+### Token Scopes
+
+The minimum required scope is:
+
+- `read:user` - Access to public profile information
+
+## Framework Integration
+
+### Next.js
+
+Octograph works seamlessly with Next.js:
+
+```tsx
+// pages/profile.tsx or app/profile/page.tsx
+import { OctoGraph } from "octograph";
+
+export default function ProfilePage() {
+  return <OctoGraph username="habibthadev" />;
+}
+```
+
+### Vite
+
+For Vite projects, ensure React is configured:
+
+```tsx
+// main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { OctoGraph } from "octograph";
+import "octograph/styles";
+
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <OctoGraph username="habibthadev" />
+    </QueryClientProvider>
+  </React.StrictMode>
+);
+```
+
+### Create React App
+
+```tsx
+// src/App.tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { OctoGraph } from "octograph";
+import "octograph/styles";
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className="App">
+        <OctoGraph username="habibthadev" />
+      </div>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Component not rendering:**
+
+- Ensure React Query provider is wrapped around your app
+- Check that the username exists on GitHub
+- Verify your GitHub token has correct permissions
+
+**Styling issues:**
+
+- Make sure to import `octograph/styles`
+- Check if your CSS framework conflicts with component styles
+
+**TypeScript errors:**
+
+- Ensure you have the latest version of `@types/react`
+- Check that all peer dependencies are installed
+
+### Development Mode
+
+During development without a GitHub token, Octograph will use mock data and show a warning in the console. This is normal and expected behavior.

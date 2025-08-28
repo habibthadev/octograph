@@ -1,0 +1,16 @@
+node_modules
+dist
+build
+.next
+.turbo
+.changeset
+*.log
+.DS_Store
+.env
+.env.local
+.env.production.local
+.env.development.local
+coverage
+.nyc_output
+*.tgz
+*.tar.gz

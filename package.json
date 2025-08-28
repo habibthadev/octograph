@@ -1,0 +1,38 @@
+{
+  "name": "octograph-workspace",
+  "version": "1.0.0",
+  "description": "Octograph - GitHub-style activity graph React component library workspace",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --parallel dev",
+    "build": "pnpm --recursive build",
+    "test": "pnpm --recursive test",
+    "test:watch": "pnpm --recursive test --watch",
+    "test:coverage": "pnpm --recursive test --coverage",
+    "lint": "pnpm --recursive lint",
+    "lint:fix": "pnpm --recursive lint --fix",
+    "type-check": "pnpm --recursive type-check",
+    "clean": "pnpm --recursive clean",
+    "changeset": "changeset",
+    "changeset:status": "changeset status",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish",
+    "setup:dev": "./scripts/setup-dev.sh",
+    "setup:cicd": "./scripts/setup-cicd.sh",
+    "verify:sync": "./scripts/verify-sync.sh",
+    "precommit": "pnpm lint && pnpm type-check && pnpm test"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.6",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@10.15.0",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}

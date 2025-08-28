@@ -1,0 +1,86 @@
+# Octograph
+
+GitHub-style activity graph React component library with extreme customization and modern developer experience.
+
+![Octograph Demo](https://via.placeholder.com/800x200/22c55e/ffffff?text=GitHub+Activity+Graph)
+
+## Features
+
+✨ **Fully customizable** - Complete control over styling, themes, and behavior  
+🎨 **Built-in themes** - Shadcn, Vesper, Vercel, 11Labs, Prisma, Supabase, Ayu, Atom, GitHub  
+🔄 **SSR Support** - Works with Next.js App Router and React Server Components  
+⚡ **Performance** - Tree-shakable, optimized bundle size  
+♿ **Accessible** - ARIA compliant and keyboard navigable  
+📱 **Responsive** - Looks great on all screen sizes  
+🧪 **TypeScript** - Full type safety and autocomplete  
+🎯 **React Query** - Built-in caching and error handling
+
+## Quick Start
+
+### Installation
+
+```bash
+npm install octograph
+# or
+pnpm add octograph
+# or
+yarn add octograph
+```
+
+### Basic Usage
+
+```tsx
+import { OctoGraph } from "octograph";
+import "octograph/styles";
+
+function App() {
+  return <OctoGraph username="habibthadev" year={2023} theme="github" />;
+}
+```
+
+### With React Query Provider
+
+```tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { OctoGraph } from "octograph";
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <OctoGraph username="habibthadev" />
+    </QueryClientProvider>
+  );
+}
+```
+
+## Documentation
+
+- [Getting Started](/getting-started) - Installation and basic setup
+- [Props API](/props) - Complete props documentation
+- [Themes](/themes) - Theme system and customization
+- [SSR Guide](/ssr) - Server-side rendering setup
+- [Examples](/examples) - Live examples and demos
+- [API Reference](/api) - Hooks and utilities
+
+## GitHub Token Setup
+
+For production use, you'll need a GitHub personal access token:
+
+1. Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
+2. Generate a new token with `read:user` scope
+3. Add it as `GITHUB_TOKEN` or `NEXT_PUBLIC_GITHUB_TOKEN` environment variable
+
+```bash
+# .env.local
+GITHUB_TOKEN=your_token_here
+```
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](https://github.com/habibthadev/octograph/blob/main/CONTRIBUTING.md) for details.
+
+## License
+
+MIT License - see [LICENSE](https://github.com/habibthadev/octograph/blob/main/LICENSE) for details.

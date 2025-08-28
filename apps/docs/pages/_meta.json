@@ -1,0 +1,9 @@
+{
+  "index": "Introduction",
+  "getting-started": "Getting Started",
+  "props": "Props API",
+  "themes": "Themes",
+  "ssr": "SSR Guide",
+  "examples": "Examples",
+  "api": "API Reference"
+}

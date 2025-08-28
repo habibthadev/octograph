@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd ../.. && pnpm build --filter octograph-docs",
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "framework": "nextjs",
+  "nodejs": "18.x"
+}
