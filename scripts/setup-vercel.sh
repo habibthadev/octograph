@@ -57,14 +57,19 @@ setup_project() {
     cd "$project_path"
 
     # Check if project already exists
-    if vercel link --yes --project "$project_name" 2>/dev/null; then
+    if vercel link --yes --project "$project_name" --token "$VERCEL_TOKEN" 2>/dev/null; then
         print_success "Project '$project_name' already exists and is linked"
     else
         print_warning "Project '$project_name' doesn't exist. Creating new project..."
 
-        # Create new project
-        if vercel --yes; then
+        # Create new project without VERCEL_ORG_ID to avoid the error
+        unset VERCEL_ORG_ID
+        if vercel --token "$VERCEL_TOKEN" --yes; then
             print_success "Project '$project_name' created successfully"
+            # Re-set VERCEL_ORG_ID if it was set
+            if [ -n "$ORIGINAL_VERCEL_ORG_ID" ]; then
+                export VERCEL_ORG_ID="$ORIGINAL_VERCEL_ORG_ID"
+            fi
         else
             print_error "Failed to create project '$project_name'"
             return 1
@@ -105,6 +110,9 @@ main() {
 
     check_vercel_cli
     check_vercel_login
+
+    # Save original VERCEL_ORG_ID
+    ORIGINAL_VERCEL_ORG_ID="$VERCEL_ORG_ID"
 
     # Get the root directory of the monorepo
     local root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

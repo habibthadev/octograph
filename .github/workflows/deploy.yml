@@ -48,7 +48,11 @@ jobs:
           # Check if project exists, create if not
           if ! vercel link --yes --project octograph-docs --token ${{ secrets.VERCEL_TOKEN }} 2>/dev/null; then
             echo "Project doesn't exist, creating new project..."
+            # Create project without VERCEL_ORG_ID to avoid the error
+            unset VERCEL_ORG_ID
             vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+            # Re-set VERCEL_ORG_ID for deployment
+            export VERCEL_ORG_ID="${{ secrets.VERCEL_ORG_ID }}"
           fi
 
           # Deploy to production
@@ -94,20 +98,12 @@ jobs:
           # Check if project exists, create if not
           if ! vercel link --yes --project octograph-example --token ${{ secrets.VERCEL_TOKEN }} 2>/dev/null; then
             echo "Project doesn't exist, creating new project..."
+            # Create project without VERCEL_ORG_ID to avoid the error
+            unset VERCEL_ORG_ID
             vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+            # Re-set VERCEL_ORG_ID for deployment
+            export VERCEL_ORG_ID="${{ secrets.VERCEL_ORG_ID }}"
           fi
-
-          # Deploy to production
-          vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-
-      - name: Deploy Example to Vercel
-        working-directory: apps/example
-        run: |
-          # Link or create project
-          vercel link --yes --project octograph-example --token ${{ secrets.VERCEL_TOKEN }} || \
-          vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
 
           # Deploy to production
           vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
