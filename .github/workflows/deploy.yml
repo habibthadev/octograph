@@ -39,14 +39,20 @@ jobs:
       - name: Build docs
         run: pnpm --filter octograph-docs build
 
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_DOCS_PROJECT_ID }}
-          working-directory: apps/docs
-          vercel-args: "--prod"
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy Docs to Vercel
+        working-directory: apps/docs
+        run: |
+          # Link or create project
+          vercel link --yes --project octograph-docs --token ${{ secrets.VERCEL_TOKEN }} || \
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+
+          # Deploy to production
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
   deploy-example:
     name: Deploy Example
@@ -77,11 +83,17 @@ jobs:
       - name: Build example
         run: pnpm --filter octograph-example build
 
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_EXAMPLE_PROJECT_ID }}
-          working-directory: apps/example
-          vercel-args: "--prod"
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy Example to Vercel
+        working-directory: apps/example
+        run: |
+          # Link or create project
+          vercel link --yes --project octograph-example --token ${{ secrets.VERCEL_TOKEN }} || \
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+
+          # Deploy to production
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

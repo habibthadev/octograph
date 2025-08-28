@@ -1,7 +1,7 @@
 import {
   useState,
   useEffect,
-  useRef,
+  // useRef,
   useLayoutEffect,
   useCallback,
   EffectCallback,
@@ -9,7 +9,7 @@ import {
 } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type {
-  GitHubUserContributions,
+  // GitHubUserContributions,
   GitHubContributionCalendar,
   UseOctographOptions,
   TimeRange,
@@ -120,9 +120,9 @@ export function useOctograph(
 }
 
 export function useOctographSSR(
-  username: string,
-  year: number = new Date().getFullYear(),
-  timeRange?: TimeRange
+  // _username: string,
+  // _year: number = new Date().getFullYear(),
+  // _timeRange?: TimeRange
 ): GitHubContributionCalendar {
   throw new Error(
     "useOctographSSR requires server-side data fetching. Please pre-fetch data and pass it via the 'data' prop instead."

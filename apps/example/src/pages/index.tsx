@@ -254,7 +254,7 @@ export default function Home() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {selectedUser.name}'s GitHub Activity
+                    {selectedUser.name}&apos;s GitHub Activity
                   </h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     @{selectedUser.username} • 2025 contributions
@@ -356,7 +356,7 @@ export default function Home() {
             Current Configuration
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Here's the code to reproduce the current graph configuration:
+            Here&apos;s the code to reproduce the current graph configuration:
           </p>
 
           <div className="bg-gray-50 dark:bg-gray-900 rounded-md p-4 overflow-x-auto">

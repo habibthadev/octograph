@@ -5,13 +5,13 @@ import {
   startOfYear,
   endOfYear,
   eachWeekOfInterval,
-  startOfWeek,
+  // startOfWeek,
   endOfWeek,
   eachDayOfInterval,
-  getDay,
-  isSameDay,
+  // getDay,
+  // isSameDay,
   parseISO,
-  getMonth,
+  // getMonth,
   getDate,
 } from "date-fns";
 import type {
@@ -22,6 +22,8 @@ import type {
   ContributionLevel,
   WeekdayLabels,
   MonthLabels,
+  ThemeColors,
+  GitHubContributionWeek,
 } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -188,16 +190,16 @@ export function getAriaLabel(date: string, count: number): string {
 
 export function calculateCellColor(
   level: ContributionLevel,
-  theme: any
+  theme: ThemeColors
 ): string {
   return theme.levels[level] || theme.levels[0];
 }
 
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: Parameters<T>) => void>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout);
@@ -205,7 +207,7 @@ export function debounce<T extends (...args: any[]) => any>(
   };
 }
 
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: Parameters<T>[]) => void>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
@@ -224,7 +226,7 @@ export function generateMockData(year: number): GitHubContributionCalendar {
   const yearStart = startOfYear(new Date(year, 0, 1));
   const yearEnd = endOfYear(new Date(year, 0, 1));
 
-  const weeks: any[] = [];
+  const weeks: GitHubContributionWeek[] = [];
   const weekIntervals = eachWeekOfInterval(
     { start: yearStart, end: yearEnd },
     { weekStartsOn: 0 }
@@ -242,20 +244,27 @@ export function generateMockData(year: number): GitHubContributionCalendar {
         const count = Math.floor(Math.random() * 15);
         totalContributions += count;
 
+        const contributionLevel:
+          | "NONE"
+          | "FIRST_QUARTILE"
+          | "SECOND_QUARTILE"
+          | "THIRD_QUARTILE"
+          | "FOURTH_QUARTILE" =
+          count === 0
+            ? "NONE"
+            : count <= 3
+            ? "FIRST_QUARTILE"
+            : count <= 6
+            ? "SECOND_QUARTILE"
+            : count <= 9
+            ? "THIRD_QUARTILE"
+            : "FOURTH_QUARTILE";
+
         return {
           date: format(day, "yyyy-MM-dd"),
           contributionCount: count,
           color: "#000000",
-          contributionLevel:
-            count === 0
-              ? "NONE"
-              : count <= 3
-              ? "FIRST_QUARTILE"
-              : count <= 6
-              ? "SECOND_QUARTILE"
-              : count <= 9
-              ? "THIRD_QUARTILE"
-              : "FOURTH_QUARTILE",
+          contributionLevel,
         };
       });
 

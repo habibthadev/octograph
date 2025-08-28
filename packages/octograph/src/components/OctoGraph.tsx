@@ -16,12 +16,12 @@ import { getTheme, isValidThemeName, defaultTheme } from "@/themes";
 import {
   useOctograph,
   useOctographManual,
-  useThemeMode,
+  // useThemeMode,
   useResponsiveCellSize,
 } from "@/hooks";
 import type {
   OctographProps,
-  CustomTheme,
+  // CustomTheme,
   ThemeColors,
   ContributionData,
   ProcessedData,
@@ -188,8 +188,7 @@ const ContributionGrid: React.FC<ContributionGridProps> = ({
     );
   };
 
-  const textColorClass =
-    themeMode === "light" ? "fill-gray-600" : "fill-gray-300";
+  // const textColorClass = themeMode === "light" ? "fill-gray-600" : "fill-gray-300";
 
   const textFillStyle: CSSProperties =
     themeMode === "light"
@@ -315,7 +314,7 @@ const Legend: React.FC<LegendProps> = ({
         Less
       </span>
       <div className="flex gap-1">
-        {levels.map((level, index) => (
+        {levels.map((level) => (
           <svg key={level} width={cellSize} height={cellSize}>
             <rect
               width={cellSize}
@@ -377,7 +376,7 @@ const LoadingState: React.FC<{ cellSize: number; cellGap: number }> = ({
   );
 };
 
-const ErrorState: React.FC<{ error: any; onRetry?: () => void }> = ({
+const ErrorState: React.FC<{ error: Error | null; onRetry?: () => void }> = ({
   error,
   onRetry,
 }) => {
@@ -540,7 +539,7 @@ export const OctoGraph: React.FC<OctographProps> = ({
                   themeMode === "light" ? "text-gray-900" : "text-white"
                 )}
               >
-                {username}'s contributions
+                {username}%apos;s contributions
               </h3>
               <p
                 className={cn(
