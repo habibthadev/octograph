@@ -31,7 +31,9 @@ describe("OctoGraph", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText("testuser's contributions")).toBeInTheDocument();
+    expect(
+      screen.getByText("testuser%apos;s contributions")
+    ).toBeInTheDocument();
     expect(screen.getByText(/contributions in 2023/)).toBeInTheDocument();
   });
 
@@ -82,7 +84,9 @@ describe("OctoGraph", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText("testuser's contributions")).toBeInTheDocument();
+    expect(
+      screen.getByText("testuser%apos;s contributions")
+    ).toBeInTheDocument();
   });
 
   it("handles cell click events", () => {

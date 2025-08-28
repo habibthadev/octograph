@@ -45,9 +45,11 @@ jobs:
       - name: Deploy Docs to Vercel
         working-directory: apps/docs
         run: |
-          # Link or create project
-          vercel link --yes --project octograph-docs --token ${{ secrets.VERCEL_TOKEN }} || \
-          vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+          # Check if project exists, create if not
+          if ! vercel link --yes --project octograph-docs --token ${{ secrets.VERCEL_TOKEN }} 2>/dev/null; then
+            echo "Project doesn't exist, creating new project..."
+            vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+          fi
 
           # Deploy to production
           vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
@@ -85,6 +87,20 @@ jobs:
 
       - name: Install Vercel CLI
         run: npm install -g vercel
+
+      - name: Deploy Example to Vercel
+        working-directory: apps/example
+        run: |
+          # Check if project exists, create if not
+          if ! vercel link --yes --project octograph-example --token ${{ secrets.VERCEL_TOKEN }} 2>/dev/null; then
+            echo "Project doesn't exist, creating new project..."
+            vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+          fi
+
+          # Deploy to production
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
       - name: Deploy Example to Vercel
         working-directory: apps/example
